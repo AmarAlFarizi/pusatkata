@@ -1,16 +1,64 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
+@php
+    $defaultDescription = 'Penerbit buku ber-ISBN. Layanan penerbitan naskah, katalog buku, dan pelacakan proses penerbitan.';
+    $ogImage = $settings->logo ? url(\Illuminate\Support\Facades\Storage::url($settings->logo)) : null;
+@endphp
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', config('app.name'))</title>
-    <meta name="description" content="@yield('meta_description', 'Penerbit buku ber-ISBN: katalog buku, layanan penerbitan, dan informasi terbaru.')">
+    <meta name="description" content="@yield('meta_description', $defaultDescription)">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+
+    {{-- Open Graph --}}
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="@yield('title', config('app.name'))">
+    <meta property="og:description" content="@yield('meta_description', $defaultDescription)">
+    <meta property="og:url" content="{{ url()->current() }}">
+    @hasSection('og_image')
+        <meta property="og:image" content="@yield('og_image')">
+        <meta name="twitter:image" content="@yield('og_image')">
+    @elseif ($ogImage)
+        <meta property="og:image" content="{{ $ogImage }}">
+        <meta name="twitter:image" content="{{ $ogImage }}">
+    @endif
+
+    {{-- Twitter --}}
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('title', config('app.name'))">
+    <meta name="twitter:description" content="@yield('meta_description', $defaultDescription)">
+
+    @stack('head')
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+
+    {{-- Structured data: Organization --}}
+    <script type="application/ld+json">
+        {!! json_encode(array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => config('app.name'),
+            'url' => url('/'),
+            'logo' => $ogImage,
+            'description' => $defaultDescription,
+            'email' => $settings->contact_email,
+            'telephone' => $settings->contact_phone,
+            'address' => $settings->contact_address,
+            'sameAs' => array_values(array_filter([
+                $settings->social_instagram,
+                $settings->social_facebook,
+                $settings->social_twitter,
+            ])),
+        ]), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
 </head>
 <body class="min-h-screen bg-canvas text-body antialiased flex flex-col">
     <header x-data="{ open: false }" class="sticky top-0 z-40 bg-canvas/90 backdrop-blur border-b border-ink/10">
