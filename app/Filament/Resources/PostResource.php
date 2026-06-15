@@ -67,6 +67,9 @@ class PostResource extends Resource
 
                     Forms\Components\RichEditor::make('body')
                         ->label('Isi Artikel')
+                        ->fileAttachmentsDisk('public')
+                        ->fileAttachmentsDirectory('editor')
+                        ->fileAttachmentsVisibility('public')
                         ->columnSpanFull(),
                 ]),
 

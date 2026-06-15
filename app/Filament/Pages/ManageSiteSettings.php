@@ -89,7 +89,10 @@ class ManageSiteSettings extends Page implements HasForms
                                     ->schema([
                                         Forms\Components\RichEditor::make('about_content')
                                             ->label('Konten Tentang Kami')
-                                            ->hiddenLabel(),
+                                            ->hiddenLabel()
+                                            ->fileAttachmentsDisk('public')
+                                            ->fileAttachmentsDirectory('editor')
+                                            ->fileAttachmentsVisibility('public'),
                                     ]),
                             ]),
 
@@ -101,7 +104,10 @@ class ManageSiteSettings extends Page implements HasForms
                                     ->schema([
                                         Forms\Components\RichEditor::make('services_content')
                                             ->label('Konten Layanan')
-                                            ->hiddenLabel(),
+                                            ->hiddenLabel()
+                                            ->fileAttachmentsDisk('public')
+                                            ->fileAttachmentsDirectory('editor')
+                                            ->fileAttachmentsVisibility('public'),
                                     ]),
                             ]),
 
