@@ -1,0 +1,156 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/* ─── Design tokens (Zapier-inspired) ─── */
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    --color-primary: #ff4f00;
+    --color-on-primary: #fffefb;
+    --color-ink: #201515;
+    --color-ink-soft: #2f2a26;
+    --color-ink-mid: #36342e;
+    --color-body: #605d52;
+    --color-body-mid: #939084;
+    --color-mute: #c5c0b1;
+    --color-canvas: #fffefb;
+    --color-canvas-soft: #f8f4f0;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+@layer base {
+    body {
+        background-color: var(--color-canvas);
+        color: var(--color-body);
+        font-family: var(--font-sans);
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--color-ink);
+        font-family: var(--font-display);
+    }
+}
+
+@layer components {
+    /* Buttons — 12px radius (rounded-xl), Inter 600 */
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-lg font-semibold text-on-primary transition hover:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50;
+    }
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-ink px-6 py-3 text-lg font-semibold text-on-primary transition hover:bg-ink-soft focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30;
+    }
+    .btn-tertiary {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-ink bg-canvas px-6 py-3 text-lg font-semibold text-ink transition hover:bg-canvas-soft;
+    }
+    .btn-text {
+        @apply inline-flex items-center gap-1 rounded-xl px-4 py-2 text-sm font-bold text-ink transition hover:text-primary;
+    }
+
+    /* Eyebrow — uppercase, +1px tracking */
+    .eyebrow {
+        @apply text-sm font-medium uppercase text-primary;
+        letter-spacing: 1px;
+    }
+
+    /* Form input — 6px radius, ink hairline */
+    .field {
+        @apply w-full rounded-md border border-ink/30 bg-canvas px-4 py-3 text-ink placeholder:text-body-mid transition focus:border-ink focus:outline-none focus:ring-2 focus:ring-primary/20;
+    }
+
+    /* Pill badge */
+    .badge-pill {
+        @apply inline-flex items-center rounded-full bg-canvas-soft px-3 py-1 text-sm font-medium text-ink;
+    }
+}
+
+/* Konten rich text (about, services, artikel) */
+.prose-content {
+    color: var(--color-body);
+}
+.prose-content :is(h1, h2, h3) {
+    color: var(--color-ink);
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 1.5rem 0 0.5rem;
+}
+.prose-content h1 { font-size: 2rem; }
+.prose-content h2 { font-size: 1.5rem; }
+.prose-content h3 { font-size: 1.25rem; }
+.prose-content p { margin: 0.75rem 0; line-height: 1.7; }
+.prose-content ul { list-style: disc; padding-left: 1.5rem; margin: 0.75rem 0; }
+.prose-content ol { list-style: decimal; padding-left: 1.5rem; margin: 0.75rem 0; }
+.prose-content li { margin: 0.25rem 0; }
+.prose-content a { color: var(--color-primary); text-decoration: underline; }
+.prose-content blockquote {
+    border-left: 3px solid var(--color-primary);
+    padding-left: 1rem;
+    color: var(--color-ink-mid);
+    margin: 1rem 0;
+}
+
+/* ─── Motion ─── */
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
+
+/* Stagger saat load (hero) */
+.animate-rise {
+    opacity: 0;
+    animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.animate-rise.d-1 { animation-delay: 0.05s; }
+.animate-rise.d-2 { animation-delay: 0.15s; }
+.animate-rise.d-3 { animation-delay: 0.25s; }
+.animate-rise.d-4 { animation-delay: 0.35s; }
+.animate-rise.d-5 { animation-delay: 0.45s; }
+
+/* Reveal saat scroll */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+}
+[data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Marquee track */
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 38s linear infinite;
+}
+.marquee-mask:hover .marquee-track {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .animate-rise,
+    [data-reveal] { animation: none !important; opacity: 1 !important; transform: none !important; transition: none !important; }
+    .marquee-track { animation: none !important; }
+}
+
+/* Tekstur dot halus untuk band */
+.dot-grid {
+    background-image: radial-gradient(circle, rgba(32, 21, 21, 0.07) 1px, transparent 1px);
+    background-size: 22px 22px;
+}
+
+/* Marquee arah berlawanan */
+.marquee-reverse { animation-direction: reverse; }
