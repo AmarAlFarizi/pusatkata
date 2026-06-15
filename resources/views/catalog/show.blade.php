@@ -2,6 +2,36 @@
 
 @section('title', $book->title . ' — ' . config('app.name'))
 @section('meta_description', Str::limit(strip_tags($book->synopsis ?? ''), 150))
+@section('og_type', 'book')
+@if ($book->cover)
+    @section('og_image', url(\Illuminate\Support\Facades\Storage::url($book->cover)))
+@endif
+
+@push('head')
+    <script type="application/ld+json">
+        {!! json_encode(array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'Book',
+            'name' => $book->title,
+            'author' => ['@type' => 'Person', 'name' => $book->author],
+            'isbn' => $book->isPublished() ? $book->isbn_number : null,
+            'numberOfPages' => $book->pages,
+            'inLanguage' => 'id',
+            'url' => route('catalog.show', $book),
+            'image' => $book->cover ? url(\Illuminate\Support\Facades\Storage::url($book->cover)) : null,
+            'description' => Str::limit(strip_tags($book->synopsis ?? ''), 300) ?: null,
+            'genre' => $book->category?->name,
+            'publisher' => ['@type' => 'Organization', 'name' => config('app.name')],
+            'datePublished' => $book->year ? (string) $book->year : null,
+            'offers' => $book->price ? [
+                '@type' => 'Offer',
+                'price' => $book->price,
+                'priceCurrency' => 'IDR',
+                'url' => $book->marketplace_url ?: route('catalog.show', $book),
+            ] : null,
+        ], fn ($v) => $v !== null && $v !== ''), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+@endpush
 
 @section('content')
     @php $buyUrl = $book->buyUrl($settings->whatsapp_number); @endphp
