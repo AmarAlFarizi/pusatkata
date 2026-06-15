@@ -20,7 +20,7 @@ class BookFactory extends Factory
 
         return [
             'title' => $title,
-            'slug' => Str::slug($title) . '-' . fake()->unique()->numberBetween(1, 999999),
+            'slug' => Str::slug($title),
             'author' => fake()->name(),
             'category_id' => Category::factory(),
             'isbn_status' => $status,
